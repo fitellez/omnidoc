@@ -1,0 +1,284 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "version": "1.0.0",
+        "title": "Api OmniDoc",
+        "description": "Api OmniDoc",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [{
+        "url": "http://localhost"
+    }],
+    "tags": [{
+            "name": "Client",
+            "description": "API for Client"
+        }, {
+            "name": "Debit",
+            "description": "API for Debit"
+        },
+        {
+            "name": "Credit",
+            "description": "API for Credit"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "paths": {
+        "api/client/:id": {
+            "get": {
+                "tags": ["Client"],
+                "summary": "get idClient, idDebit and idCredit",
+                "responses": {
+                    "200": {
+                        "description": "get idClient, idDebit and idCredit",
+                        "type": "array",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/geStatisticsCalories"
+                                    }
+                                }
+                            }
+                        }
+
+                    },
+                    "500": {
+
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "api/client/register": {
+            "post": {
+                "tags": ["Client"],
+                "summary": "Register the user",
+                "description": "Register the user in the database, generate your debit card and your credit card",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/saveClient"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Client has been created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/dataClient"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "api/debit/withdraw": {
+            "put": {
+                "tags": ["Debit"],
+                "summary": "The client withdraws",
+                "description": "The client withdraws an amount from his total balance",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/debitWithdraw"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Return new balance"
+                    },
+                    "500": {
+
+                        "description": "Unsuccessful transaction insufficient money"
+                    }
+                }
+            }
+        },
+        "api/debit/increase": {
+            "put": {
+                "tags": ["Debit"],
+                "summary": "The client increases his balance",
+                "description": "The client increases his balance",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/debitWithdraw"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful money transaction, and return new balance"
+                    }
+                }
+            }
+        },
+        "api/credit/withdraw": {
+            "put": {
+                "tags": ["Credit"],
+                "summary": "The client withdraws",
+                "description": "The client makes a withdrawal from his credit card, a commission of 5% is made",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/creditWithdraw"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful money transaction, and return new balance"
+                    },
+                    "500": {
+                        "description": "Unsuccessful transaction the amount exceeds the limit of your account"
+                    }
+                }
+            }
+
+        },
+        "api/credit/pay": {
+            "put": {
+                "tags": ["Credit"],
+                "summary": "The client pay his credit card",
+                "description": "The customer makes the payment of his credit card",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/creditWithdraw"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Pay successful, and return new balance"
+                    },
+                    "500": {
+                        "description": "your payment exceeds your current balance, and return the current balance"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "getClient": {
+                "type": "object",
+                "properties": {
+                    "id_client": {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "id_client"
+                    },
+                    "id_debit": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "id_debit"
+                    },
+                    "id_credit": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "id_credit"
+                    }
+                }
+            },
+            "saveClient": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Fidel",
+                        "description": "name"
+                    }
+                }
+            },
+            "dataClient": {
+                "type": "object",
+                "properties": {
+                    "idClient": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "idClient"
+                    },
+                    "idDebitCard": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "idDebitCard"
+                    },
+                    "idCreditCard": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "idCreditCard"
+                    }
+                }
+            },
+            "debitWithdraw": {
+                "type": "object",
+                "required": ["idDebit", "amount"],
+                "properties": {
+                    "idDebit": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "id from debit card"
+                    },
+                    "amount": {
+                        "type": "integer",
+                        "example": 100,
+                        "description": "amount"
+                    }
+                }
+            },
+            "creditWithdraw": {
+                "type": "object",
+                "required": ["idCredit", "amount"],
+                "properties": {
+                    "idCredit": {
+                        "type": "integer",
+                        "example": 3,
+                        "description": "id from credit card"
+                    },
+                    "amount": {
+                        "type": "integer",
+                        "example": 100,
+                        "description": "amount"
+                    }
+                }
+            }
+        }
+    }
+}
